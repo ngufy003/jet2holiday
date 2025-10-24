@@ -5,59 +5,43 @@ import { useEffect, useRef } from "react";
 import { StrudelMirror } from '@strudel/codemirror';
 import { registerSoundfonts } from '@strudel/soundfonts';
 import { stranger_tune } from './tunes';
+import ControlButtons from './components/buttons';
+import RadioButtons from './components/radioButton';
 
-let globalEditor = null;
-
-
-
-export function SetupButtons() {
-
-  document.getElementById('play').addEventListener('click', () => globalEditor.evaluate());
-  document.getElementById('stop').addEventListener('click', () => globalEditor.stop());
-  document.getElementById('process').addEventListener('click', () => {
-    Proc()
-  }
-  )
-  document.getElementById('process_play').addEventListener('click', () => {
-    if (globalEditor != null) {
-      Proc()
-      globalEditor.evaluate()
-    }
-  }
-  )
-}
+let globalEditor = null;  
 
 
-
-export function ProcAndPlay() {
-  if (globalEditor != null && globalEditor.repl.state.started == true) {
-    console.log(globalEditor)
-    Proc()
-    globalEditor.evaluate();
-  }
-}
-
-export function Proc() {
-
-  let proc_text = document.getElementById('proc').value
-  let proc_text_replaced = proc_text.replaceAll('<p1_Radio>', ProcessText);
-  ProcessText(proc_text);
-  globalEditor.setCode(proc_text_replaced)
-}
-
-export function ProcessText(match, ...args) {
-
-  let replace = ""
-  if (document.getElementById('flexRadioDefault2').checked) {
-    replace = "_"
-  }
-
-  return replace
-}
 
 export default function StrudelDemo() {
 
   const hasRun = useRef(false);
+
+  const ProcessText = () => {
+
+    let replace = ""
+    if (document.getElementById('flexRadioDefault2').checked) {
+      replace = "_"
+    }
+
+    return replace
+  };
+
+  const Proc = () => {
+    let proc_text = document.getElementById('proc').value
+    let proc_text_replaced = proc_text.replaceAll('<p1_Radio>', ProcessText);
+    globalEditor.setCode(proc_text_replaced)
+  };
+
+  const ProcAndPlay = () => {
+    if (globalEditor != null && globalEditor.repl.state.started == true) {
+      console.log(globalEditor)
+      Proc()
+      globalEditor.evaluate();
+    }
+  };
+
+  const Play = () => globalEditor.evaluate();
+  const Stop = () => globalEditor.stop();
 
   useEffect(() => {
 
@@ -85,8 +69,7 @@ export default function StrudelDemo() {
         });
         Proc()
       })();
-      document.getElementById('proc').value = stranger_tune
-      SetupButtons()
+      document.getElementById('proc').value = stranger_tune 
     }
 
   }, []);
@@ -104,33 +87,24 @@ export default function StrudelDemo() {
               <textarea className="form-control" rows="15" id="proc" ></textarea>
             </div>
             <div className="col-md-4">
-
-              <nav>
-                <button id="process" className="btn btn-outline-primary">Preprocess</button>
-                <button id="process_play" className="btn btn-outline-primary">Proc & Play</button>
-                <br />
-                <button id="play" className="btn btn-outline-primary">Play</button>
-                <button id="stop" className="btn btn-outline-primary">Stop</button>
-              </nav>
+              <ControlButtons 
+                onPlay={Play} 
+                onStop={Stop} 
+                onProc={Proc} 
+                onProcAndPlay={ProcAndPlay} 
+                />
+              
             </div>
           </div>
           <div className="row">
             <div className="col-md-8" style={{ maxHeight: '50vh', overflowY: 'auto' }}>
               <div id="editor" />
             </div>
+            // Radio Buttons Component
             <div className="col-md-4">
-              <div className="form-check">
-                <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onChange={ProcAndPlay} defaultChecked />
-                <label className="form-check-label" htmlFor="flexRadioDefault1">
-                  p1: ON
-                </label>
-              </div>
-              <div className="form-check">
-                <input className="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onChange={ProcAndPlay} />
-                <label className="form-check-label" htmlFor="flexRadioDefault2">
-                  p1: HUSH
-                </label>
-              </div>
+              <RadioButtons onChange={ProcessText} 
+              />
+              
             </div>
           </div>
         </div>
