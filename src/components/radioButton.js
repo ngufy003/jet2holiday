@@ -13,7 +13,7 @@ function RadioButtons({ onChange }) {
     </div>
     <div className="form-check">
       <input className="form-check-input" type="checkbox" value="" id="?"/>
-      <label className="form-check-label" htmlFor="?">
+      <label className="container" htmlFor="?">
         Default checkbox
       </label>
     </div>

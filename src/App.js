@@ -80,22 +80,19 @@ export default function StrudelDemo() {
             globalEditor.stop()
         }
     
-    
-
     const setCPM = (newcpm) => {
         setCpm(newcpm);
             if (globalEditor && typeof globalEditor.setGlobal === 'function') {
-            globalEditor.setGlobal(felix_tune(newcpm, muteS1));
+            globalEditor.setGlobal('cpm', newcpm);
             
         }
     //  setSongText(felix_tune(cpm));
     }
 
-
-
     const handleS1Change = (checked) => {
         setMuteS1(checked);
         if (globalEditor) {
+            setSongText(felix_tune(cpm, checked));
             globalEditor.setCode(felix_tune(cpm, checked));
         }
     };
@@ -103,6 +100,7 @@ export default function StrudelDemo() {
 
 useEffect(() => {
 
+    
     if (!hasRun.current) {
         document.addEventListener("d3Data", handleD3Data);
         console_monkey_patch();
@@ -140,6 +138,12 @@ useEffect(() => {
     }
     globalEditor.setCode(getSongText);
 }, [getSongText]);
+
+useEffect(() => {
+        const newText = felix_tune(cpm, muteS1);
+        setSongText(newText);
+        globalEditor?.setCode?.(newText);
+    }, [cpm, muteS1]);
 
 
 return (
