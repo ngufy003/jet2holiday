@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState} from "react";
 import { StrudelMirror } from '@strudel/codemirror';
 import { evalScope } from '@strudel/core';
 import { drawPianoroll } from '@strudel/draw';
@@ -7,7 +7,7 @@ import { initAudioOnFirstClick } from '@strudel/webaudio';
 import { transpiler } from '@strudel/transpiler';
 import { getAudioContext, webaudioOutput, registerSynthSounds } from '@strudel/webaudio';
 import { registerSoundfonts } from '@strudel/soundfonts';
-import { stranger_tune } from './tunes';
+import { stranger_tune, felix_tune } from './tunes';
 import console_monkey_patch, { getD3Data } from './console-monkey-patch';
 import ControlButtons from './components/controlButtons';
 import PlayButtons from './components/playButtons';
@@ -67,7 +67,25 @@ const handleD3Data = (event) => {
 
 export default function StrudelDemo() {
 
-const hasRun = useRef(false);
+    const hasRun = useRef(false);
+
+    const onPlayClick = () => {
+            globalEditor.evaluate()
+        }
+    const onStopClick = () => {
+            globalEditor.stop()
+        }
+    
+    const [getSongText, setSongText]  = useState(felix_tune);
+
+    const setCPM = (cpm) => {
+            if (globalEditor && typeof globalEditor.setGlobal === 'function') {
+            globalEditor.setGlobal('cpm', cpm);
+            
+        }
+     setSongText(felix_tune(cpm));
+    }
+       
 
 useEffect(() => {
 
@@ -102,12 +120,12 @@ useEffect(() => {
                 },
             });
             
-        document.getElementById('proc').value = stranger_tune
+        document.getElementById('proc').value = felix_tune;
         // SetupButtons()
         // Proc()
     }
-
-}, []);
+    globalEditor.setCode(getSongText);
+}, [getSongText]);
 
 
 return (
@@ -118,14 +136,14 @@ return (
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-8" style={{ maxHeight: '50vh', overflowY: 'auto' }}>
-                        <PreprocessTextArea />
+                        <PreprocessTextArea defaultValue={getSongText} onChange={(e) => setSongText(e.target.value)} />
                     </div>
                     <div className="col-md-4">
                         
                         <nav>
                             <ProcButtons />
                             <br />
-                            <PlayButtons />
+                            <PlayButtons onPlay={onPlayClick} onStop={onStopClick} />
                         </nav>
                     </div>
                 </div>
@@ -135,7 +153,7 @@ return (
                         <div id="output" />
                     </div>
                     <div className="col-md-4">
-                        <ControlButtons />
+                        <ControlButtons initialCpm={120} onSetCpm={setCPM} />
                     </div>
                 </div>
             </div>
