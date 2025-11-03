@@ -1,19 +1,21 @@
 import React from 'react';
 import useCpm from '../hooks/controlCPM';
+import useS1 from '../hooks/controlS1';
 import { useState } from 'react';
 import '../controlButton.css';
 
 
 function ControlButtons({ initialCpm = 120, onSetCpm, onS1Change}) {
     const { cpm, handleChange } = useCpm(initialCpm, onSetCpm);
-    const [s1Checked, setS1Checked] = useState(false);
+    // const [s1Checked, setS1Checked] = useState(false);
+    const { s1Checked, handleS1Change } = useS1(false, onS1Change);
 
-    const handleS1Change = (e) => {
-        setS1Checked(e.target.checked);
-        if (onS1Change) {
-            onS1Change(e.target.checked);
-        }
-    };
+    // const handleS1Change = (e) => {
+    //     setS1Checked(e.target.checked);
+    //     if (onS1Change) {
+    //         onS1Change(e.target.checked);
+    //     }
+    // };
 
     return (
         <>
