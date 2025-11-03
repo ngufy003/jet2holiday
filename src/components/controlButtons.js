@@ -1,9 +1,18 @@
 import React from 'react';
 import useCpm from '../hooks/controlCPM';
+import { useState } from 'react';
 
 // function ControlButtons() {
-function ControlButtons({ initialCpm = 120, onSetCpm }) {
+function ControlButtons({ initialCpm = 120, onSetCpm, onS1Change}) {
     const { cpm, handleChange } = useCpm(initialCpm, onSetCpm);
+    const [s1Checked, setS1Checked] = useState(false);
+
+    const handleS1Change = (e) => {
+        setS1Checked(e.target.checked);
+        if (onS1Change) {
+            onS1Change(e.target.checked);
+        }
+    };
 
     return (
         <>
@@ -17,9 +26,9 @@ function ControlButtons({ initialCpm = 120, onSetCpm }) {
                 <input type="range" className="form-range" min="1" max="5" step="0.5" id="speed_range"></input>
             </div>
             <div className="form-check">
-                <input className="form-check-input" type="checkbox" value="" id="s1"/>
-                <label className="form-check-label" htmlFor="s1">
-                    Default checkbox
+                <input className="form-check-input" type="checkbox" value="" id="s1" checked={s1Checked} onChange={handleS1Change}/>
+                <label className="form-check-label" htmlFor="s1" >
+                    Mute S1
                 </label>
             </div>
             <div className="form-check">

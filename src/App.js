@@ -68,6 +68,10 @@ const handleD3Data = (event) => {
 export default function StrudelDemo() {
 
     const hasRun = useRef(false);
+    const [cpm, setCpm] = useState(120);
+    // const [getSongText, setSongText]  = useState(felix_tune);
+    const [getSongText, setSongText] = useState(() => felix_tune(120, false));
+    const [muteS1, setMuteS1] = useState(false);
 
     const onPlayClick = () => {
             globalEditor.evaluate()
@@ -76,15 +80,25 @@ export default function StrudelDemo() {
             globalEditor.stop()
         }
     
-    const [getSongText, setSongText]  = useState(felix_tune);
+    
 
-    const setCPM = (cpm) => {
+    const setCPM = (newcpm) => {
+        setCpm(newcpm);
             if (globalEditor && typeof globalEditor.setGlobal === 'function') {
-            globalEditor.setGlobal('cpm', cpm);
+            globalEditor.setGlobal(felix_tune(newcpm, muteS1));
             
         }
-     setSongText(felix_tune(cpm));
+    //  setSongText(felix_tune(cpm));
     }
+
+
+
+    const handleS1Change = (checked) => {
+        setMuteS1(checked);
+        if (globalEditor) {
+            globalEditor.setCode(felix_tune(cpm, checked));
+        }
+    };
        
 
 useEffect(() => {
@@ -153,7 +167,7 @@ return (
                         <div id="output" />
                     </div>
                     <div className="col-md-4">
-                        <ControlButtons initialCpm={120} onSetCpm={setCPM} />
+                        <ControlButtons initialCpm={120} onSetCpm={setCPM} onS1Change={handleS1Change} />
                     </div>
                 </div>
             </div>

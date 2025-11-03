@@ -13,9 +13,9 @@ p2: "<a1 e2>/8".clip(0.8).struct("x*8").s("supersaw").note();
 // @version 1.2`;
 
 
-export function felix_tune (cpm = 120 ) { 
+export function felix_tune (cpm = 120, muteS1 = false) { 
 return `setcpm(${cpm});
-s1 : n("0 [2 4] <3 5> [~ <4 1>]".add("<0 [0,2,4]>"))
+${muteS1 ? '_' : ''}s1 : n("0 [2 4] <3 5> [~ <4 1>]".add("<0 [0,2,4]>"))
 .scale("C5:minor").release(.5)
 .sound("gm_xylophone").room(.5);
 
