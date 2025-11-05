@@ -1,0 +1,9 @@
+.btn-equal {
+  /* min-height: 42px;              consistent height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* padding-left: 0.75rem; */
+  /* padding-right: 0.90rem; */
+  /* font-weight: 500; */
+}

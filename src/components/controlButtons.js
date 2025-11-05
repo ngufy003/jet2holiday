@@ -29,10 +29,10 @@ function ControlButtons({ initialCpm = 120, onSetCpm, onS1Change}) {
                 <input type="range" className="form-range" min="1" max="5" step="0.5" id="speed_range"></input>
             </div>
 
-            <label className="checkbox-btn">
+            <label className="checkbox-btn ">
                 <input id="s1" type="checkbox" checked={s1Checked} onChange={handleS1Change} />
                 <span className="checkmark" aria-hidden="true" />
-                <span className="label-text">Mute S1</span>
+                <span className="label-text ">Mute S1</span>
             </label>
 
             <label className="checkbox-btn">

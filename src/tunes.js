@@ -17,7 +17,7 @@ export function felix_tune (cpm = 120, muteS1 = false) {
 return `setcpm(${cpm});
 ${muteS1 ? '_' : ''}s1 : n("0 [2 4] <3 5> [~ <4 1>]".add("<0 [0,2,4]>"))
 .scale("C5:minor").release(.5)
-.sound("gm_xylophone").room(.5);
+.sound("gm_xylophone").room(.5).log();
 
 
 `;

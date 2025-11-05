@@ -13,6 +13,7 @@ import ControlButtons from './components/controlButtons';
 import PlayButtons from './components/playButtons';
 import ProcButtons from './components/procButtons';
 import PreprocessTextArea from './components/preprocessTextArea';
+import Graph from './components/graph';
 
 let globalEditor = null;
 
@@ -172,6 +173,9 @@ return (
                     </div>
                     <div className="col-md-4">
                         <ControlButtons initialCpm={120} onSetCpm={setCPM} onS1Change={handleS1Change} />
+                    </div>
+                    <div className="col-md-4 ">
+                        <Graph />
                     </div>
                 </div>
             </div>
