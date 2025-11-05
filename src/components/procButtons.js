@@ -11,8 +11,6 @@ function ProcButtons() {
                 <div className="col-6">
                     <button id="process_play" className="btn btn-outline-primary w-100 btn-equal btn-lg">Proc &amp; Play</button>
                 </div>
-            {/* <button id="process" className="btn btn-outline-primary">Preprocess</button>
-            <button id="process_play" className="btn btn-outline-primary">Proc & Play</button> */}
             </div>
             </div>
         </>

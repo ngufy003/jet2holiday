@@ -21,58 +21,14 @@ const handleD3Data = (event) => {
     console.log(event.detail);
 };
 
-// export function SetupButtons() {
-
-//     document.getElementById('play').addEventListener('click', () => globalEditor.evaluate());
-//     document.getElementById('stop').addEventListener('click', () => globalEditor.stop());
-//     document.getElementById('process').addEventListener('click', () => {
-//         Proc()
-//     }
-//     )
-//     document.getElementById('process_play').addEventListener('click', () => {
-//         if (globalEditor != null) {
-//             Proc()
-//             globalEditor.evaluate()
-//         }
-//     }
-//     )
-// }
-
-
-
-// export function ProcAndPlay() {
-//     if (globalEditor != null && globalEditor.repl.state.started == true) {
-//         console.log(globalEditor)
-//         Proc()
-//         globalEditor.evaluate();
-//     }
-// }
-
-// export function Proc() {
-
-//     let proc_text = document.getElementById('proc').value
-//     let proc_text_replaced = proc_text.replaceAll('<p1_Radio>', ProcessText);
-//     ProcessText(proc_text);
-//     globalEditor.setCode(proc_text_replaced)
-// }
-
-// export function ProcessText(match, ...args) {
-
-//     let replace = ""
-//     // if (document.getElementById('flexRadioDefault2').checked) {
-//     //     replace = "_"
-//     // }
-
-//     return replace
-// }
 
 export default function StrudelDemo() {
 
     const hasRun = useRef(false);
     const [cpm, setCpm] = useState(120);
-    // const [getSongText, setSongText]  = useState(felix_tune);
     const [getSongText, setSongText] = useState(() => felix_tune(120, false));
     const [muteS1, setMuteS1] = useState(false);
+    const [volume, setVolume] = useState(0.5);
 
     const onPlayClick = () => {
             globalEditor.evaluate()
@@ -81,22 +37,30 @@ export default function StrudelDemo() {
             globalEditor.stop()
         }
     
-    const setCPM = (newcpm) => {
-        setCpm(newcpm);
-            if (globalEditor && typeof globalEditor.setGlobal === 'function') {
-            globalEditor.setGlobal('cpm', newcpm);
-            
-        }
-    //  setSongText(felix_tune(cpm));
-    }
+    // Handle CPM changes
+    const setCPM = (newCpm) => {
+        setCpm(newCpm);
+    };
 
+    // Handle S1 mute/unmute changes
     const handleS1Change = (checked) => {
         setMuteS1(checked);
-        if (globalEditor) {
-            setSongText(felix_tune(cpm, checked));
-            globalEditor.setCode(felix_tune(cpm, checked));
-        }
     };
+
+    // Handle volume changes 
+    const handleVolumeChange = (vol) => {
+        setVolume(vol);
+    };
+
+    // Update song text whenever CPM, muteS1, or volume changes
+    useEffect(() => {
+        // Convert volume from 1-10 scale to 0-1 for audio gain
+        const normalizedVolume = volume / 5;
+        const newText = felix_tune(cpm, muteS1, normalizedVolume);
+        setSongText(newText);
+        globalEditor?.setCode?.(newText);
+    }, [cpm, muteS1, volume]);
+
        
 
 useEffect(() => {
@@ -134,17 +98,16 @@ useEffect(() => {
             });
             
         document.getElementById('proc').value = felix_tune;
-        // SetupButtons()
-        // Proc()
+
     }
     globalEditor.setCode(getSongText);
 }, [getSongText]);
 
 useEffect(() => {
-        const newText = felix_tune(cpm, muteS1);
+        const newText = felix_tune(cpm, muteS1, volume);
         setSongText(newText);
         globalEditor?.setCode?.(newText);
-    }, [cpm, muteS1]);
+    }, [cpm, muteS1, volume]);
 
 
 return (
@@ -172,7 +135,7 @@ return (
                         <div id="output" />
                     </div>
                     <div className="col-md-4">
-                        <ControlButtons initialCpm={120} onSetCpm={setCPM} onS1Change={handleS1Change} />
+                        <ControlButtons initialCpm={120} onSetCpm={setCPM} onS1Change={handleS1Change} onVolumeChange={handleVolumeChange} />
                     </div>
                     <div className="col-md-4 ">
                         <Graph />

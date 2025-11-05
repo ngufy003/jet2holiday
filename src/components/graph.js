@@ -1,123 +1,153 @@
 import React, { useState, useEffect, useRef } from 'react';
-import console_monkey_patch, { getD3Data } from '../console-monkey-patch';
+import { getD3Data } from '../console-monkey-patch';
 import * as d3 from 'd3';
 
+/**
+ * Graph
+ * - Listens for d3Data events emitted by the app (getD3Data)
+ * - Parses "duration:" values from the log string array
+ * - Renders a simple D3 line chart into a local <svg> (via ref)
+ */
 export default function Graph() {
-    const [currentData, setCurrentData] = useState(null);
-    const svgRef = useRef(null);
-    const maxItems = 50;
+  // Holds the latest array returned by getD3Data() (Array of Strings)
+  const [currentData, setCurrentData] = useState(null);
 
-    //Fetch D3 data
-    useEffect(() => {
-        // Initialize from any existing data on mount
-        const initial = getD3Data();
-        if (initial) setCurrentData(initial);
+  // Ref to this component's <svg> so D3 draws only inside it
+  const svgRef = useRef(null);
 
-        const handleD3Update = () => {
-            setCurrentData(getD3Data());
-        };
-        // Listen for custom d3Data events
-        document.addEventListener('d3Data', handleD3Update);
-        return () => document.removeEventListener('d3Data', handleD3Update);
-    }, []);
+  // Maximum number of points to draw (keeps chart readable)
+  const maxItems = 50;
 
-    // Helper function to extract duration from log strings
-    function LogToNum(input) {
-        if (!input) return 0;
-        if (typeof input === 'number') return input;
+  // On mount:
+  // - initialize with any existing data
+  // - subscribe to 'd3Data' events to update the graph whenever logs change
+  useEffect(() => {
+    const initial = getD3Data();
+    if (initial) setCurrentData(initial);
 
-        const str = String(input).trim();
-        const n = Number(str);
-        if (!Number.isNaN(n)) return n;
+    const handleD3Update = () => {
+      const data = getD3Data();
+      if (data) setCurrentData(data);
+    };
 
-        const stringArray = str.split(/(\s+)/);
-        for (const item of stringArray) {
-            if (item.startsWith('duration:')) {
-                const val = Number(item.substring(9));
-                return Number.isNaN(val) ? 0 : val;
-            }
-        }
-        return 0;
+    document.addEventListener('d3Data', handleD3Update);
+    return () => document.removeEventListener('d3Data', handleD3Update);
+  }, []);
+
+  /**
+   * LogToNum
+   * Converts a log entry (string) into a number by extracting "duration:<number>"
+   */
+  function LogToNum(input) {
+    if (!input) return 0;
+    if (typeof input === 'number') return input;
+
+    const str = String(input).trim();
+
+    // If the whole string is numeric, return it directly
+    const asNum = Number(str);
+    if (!Number.isNaN(asNum)) return asNum;
+
+    // Otherwise, look for a "duration:" token and parse its value
+    const tokens = str.split(/(\s+)/);
+    for (const t of tokens) {
+      if (t.startsWith('duration:')) {
+        const val = Number(t.substring('duration:'.length));
+        return Number.isNaN(val) ? 0 : val;
+      }
     }
+    return 0;
+  }
 
-    // 3️⃣ D3 rendering effect
-    useEffect(() => {
-        if (!currentData) return;
+  // Render/Update chart whenever currentData changes
+  useEffect(() => {
+    if (!currentData) return;
 
-        const svg = d3.select(svgRef.current);
-        svg.selectAll('*').remove();
+    // Select only this component's SVG
+    const svg = d3.select(svgRef.current);
+    // Clear previous render
+    svg.selectAll('*').remove();
 
-        let w = svg.node().getBoundingClientRect().width - 40;
-        let h = svg.node().getBoundingClientRect().height - 25;
-        const margin = { left: 30, top: 3 };
+    // Compute available drawing area
+    const rect = svg.node().getBoundingClientRect();
+    const w = rect.width - 40;   // inner width (minus right padding)
+    const h = rect.height - 25;  // inner height (minus bottom padding)
+    const margin = { left: 30, top: 3 };
 
-        // Extract and convert duration values from string array to numbers
-        const dataPoints = Array.isArray(currentData) 
-            ? currentData.map(d => LogToNum(d)).slice(-maxItems)
-            : [];
+    // Convert string logs to numeric durations and cap to the last maxItems entries
+    const dataPoints = Array.isArray(currentData)
+      ? currentData.map(LogToNum).slice(-maxItems)
+      : [];
 
-        if (dataPoints.length === 0) return;
+    if (dataPoints.length === 0) return;
 
-        // const maxValue = Math.max(...dataPoints, 1);
-        const maxValue = 0.4; // yScale for zoomed in graph
+    // Y-domain: auto-scale to data
+    const maxValue = 0.4;
 
-        const x = d3.scaleLinear().domain([0, dataPoints.length - 1]).range([0, w]);
-        const y = d3.scaleLinear().domain([0, maxValue]).range([h, 0]);
+    // Scales for X (index) and Y (duration value)
+    const x = d3.scaleLinear().domain([0, dataPoints.length - 1]).range([0, w]);
+    const y = d3.scaleLinear().domain([0, maxValue]).range([h, 0]);
 
-        const chartGroup = svg
-            .append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`);
+    // Chart group with margins applied
+    const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-        // Gradient
-        const gradient = chartGroup
-            .append('linearGradient')
-            .attr('id', 'line-gradient')
-            .attr('gradientUnits', 'userSpaceOnUse')
-            .attr('x1', 0)
-            .attr('y1', y(0))
-            .attr('x2', 0)
-            .attr('y2', y(maxValue));
+    // Vertical gradient for the line stroke (optional)
+    const gradient = g
+      .append('linearGradient')
+      .attr('id', 'line-gradient')
+      .attr('gradientUnits', 'userSpaceOnUse')
+      .attr('x1', 0)
+      .attr('y1', y(0))
+      .attr('x2', 0)
+      .attr('y2', y(maxValue));
 
-        gradient
-            .selectAll('stop')
-            .data([
-                { offset: '0%', color: 'green' },
-                { offset: '100%', color: 'red' },
-            ])
-            .enter()
-            .append('stop')
-            .attr('offset', d => d.offset)
-            .attr('stop-color', d => d.color);
+    gradient
+      .selectAll('stop')
+      .data([
+        { offset: '0%', color: 'green' },
+        { offset: '100%', color: 'red' },
+      ])
+      .enter()
+      .append('stop')
+      .attr('offset', d => d.offset)
+      .attr('stop-color', d => d.color);
 
-        // Line
-        const line = d3.line()
-            .x((d, i) => x(i))
-            .y(d => y(d))
-            .curve(d3.curveMonotoneX);
+    // Line generator uses scales to convert data to pixels
+    const line = d3
+      .line()
+      .x((_, i) => x(i))
+      .y(d => y(d))
+      .curve(d3.curveMonotoneX);
 
-        chartGroup
-            .append('path')
-            .datum(dataPoints)
-            .attr('fill', 'none')
-            .attr('stroke', 'url(#line-gradient)')
-            .attr('stroke-width', 2)
-            .attr('d', line);
+    // Draw the line
+    g.append('path')
+      .datum(dataPoints)
+      .attr('fill', 'none')
+      .attr('stroke', 'url(#line-gradient)')
+      .attr('stroke-width', 2)
+      .attr('d', line);
 
-        // Y axis
-        chartGroup.append('g').call(d3.axisLeft(y));
+    // Y axis (left)
+    g.append('g').call(d3.axisLeft(y));
+  }, [currentData]);
 
-    }, [currentData]);
-
-    return (
-        <div className="App container">
-            <div className="row">
-                <svg ref={svgRef} width="100%" height="200" className="border border-primary rounded p-2" style={{minWidth: '300px'}}></svg>
-            </div>
-            {currentData && (
-                <div className="mt-2 small text-muted">
-                    Latest value: {Array.isArray(currentData) ? LogToNum(currentData[currentData.length - 1]) : 'N/A'}
-                </div>
-            )}
+  // JSX: contains the SVG where D3 draws, and a small "latest value" readout
+  return (
+    <div className="App container">
+      <div className="row">
+        <svg
+          ref={svgRef}
+          width="100%"
+          height="200"
+          className="border border-primary rounded p-2"
+          style={{ minWidth: '300px' }}
+        />
+      </div>
+      {Array.isArray(currentData) && currentData.length > 0 && (
+        <div className="mt-2 small text-muted">
+          Latest duration: {LogToNum(currentData[currentData.length - 1])}
         </div>
-    );
+      )}
+    </div>
+  );
 }

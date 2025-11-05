@@ -13,12 +13,25 @@ p2: "<a1 e2>/8".clip(0.8).struct("x*8").s("supersaw").note();
 // @version 1.2`;
 
 
-export function felix_tune (cpm = 120, muteS1 = false) { 
+export function felix_tune (cpm = 120, muteS1 = false, volume = 1) { 
 return `setcpm(${cpm});
 ${muteS1 ? '_' : ''}s1 : n("0 [2 4] <3 5> [~ <4 1>]".add("<0 [0,2,4]>"))
 .scale("C5:minor").release(.5)
 .sound("gm_xylophone").room(.5).log();
 
+
+_s2: note("c2 [eb3,g3]".add("<0 <1 -1>>"))
+.adsr("[.1 0]:.2:[1 0]").sound("gm_acoustic_bass")
+.room(.7)
+
+
+_s4: s("sbd:2!4").note("e2").duck("2:3")
+  .duckdepth(0.8).duckattack(0.2)
+  .almostNever(ply("3"))
+  .dec(5).gain(0.3).cut(4)
+
+all(x => x.gain(${volume}))
+// all(x => x.log());
 
 `;
 } 

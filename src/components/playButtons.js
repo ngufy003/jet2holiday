@@ -11,8 +11,6 @@ function PlayButtons({onPlay, onStop}) {
                     <button id="stop" className="btn btn-danger w-100 btn-equal btn-lg" onClick={onStop}>Stop</button>
                 </div>
             </div>
-        {/* <button id="play" className="btn btn-outline-primary" onClick={onPlay}>Play</button>
-        <button id="stop" className="btn btn-outline-primary" onClick={onStop}>Stop</button> */}
         </div>
         </>
     );
