@@ -25,16 +25,20 @@ const handleD3Data = (event) => {
 export default function StrudelDemo() {
 
     const hasRun = useRef(false);
+    const [isPlaying, setIsPlaying] = useState(false);
     const [cpm, setCpm] = useState(120);
     const [getSongText, setSongText] = useState(() => felix_tune(120, false));
     const [muteS1, setMuteS1] = useState(false);
+    const [muteS5, setMuteS5] = useState(false);
     const [volume, setVolume] = useState(0.5);
 
     const onPlayClick = () => {
-            globalEditor.evaluate()
+            setIsPlaying(true);
+            globalEditor?.evaluate()
         }
     const onStopClick = () => {
-            globalEditor.stop()
+            setIsPlaying(false)
+            globalEditor?.stop()
         }
     
     // Handle CPM changes
@@ -47,20 +51,25 @@ export default function StrudelDemo() {
         setMuteS1(checked);
     };
 
+     // Handle S5 mute/unmute changes
+    const handleS5Change = (checked) => {
+        setMuteS5(checked);
+    };
+
     // Handle volume changes 
     const handleVolumeChange = (vol) => {
         setVolume(vol);
     };
 
-    // Update song text whenever CPM, muteS1, or volume changes
     useEffect(() => {
-        // Convert volume from 1-10 scale to 0-1 for audio gain
         const normalizedVolume = volume / 5;
-        const newText = felix_tune(cpm, muteS1, normalizedVolume);
+        const newText = felix_tune(cpm, muteS1, muteS5, normalizedVolume);
         setSongText(newText);
-        globalEditor?.setCode?.(newText);
-    }, [cpm, muteS1, volume]);
-
+        if (globalEditor) {
+            globalEditor.setCode(newText);
+            if (isPlaying) globalEditor.evaluate();
+        }
+    }, [cpm, muteS1, muteS5, volume, isPlaying]);
        
 
 useEffect(() => {
@@ -103,11 +112,6 @@ useEffect(() => {
     globalEditor.setCode(getSongText);
 }, [getSongText]);
 
-useEffect(() => {
-        const newText = felix_tune(cpm, muteS1, volume);
-        setSongText(newText);
-        globalEditor?.setCode?.(newText);
-    }, [cpm, muteS1, volume]);
 
 
 return (
@@ -116,29 +120,28 @@ return (
         <main>
 
             <div className="container-fluid">
-                <div className="row">
-                    <div className="col-md-8" style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+                <div className="row ">
+                    <div className="col-md-8" id='textbox' style={{ maxHeight: '100vh', overflowY: 'auto' }}>
                         <PreprocessTextArea defaultValue={getSongText} onChange={(e) => setSongText(e.target.value)} />
+                        <div>
+                            <div id="editor" />
+                            <div id="output" />
+                        </div>
                     </div>
-                    <div className="col-md-4">
-                        
+                    <div className="col-md-4 backgroundImage ">
                         <nav>
-                            <ProcButtons />
-                            <br />
-                            <PlayButtons onPlay={onPlayClick} onStop={onStopClick} />
+                            <div className="controls-container" >
+                                <ProcButtons />
+                                <br />
+                                <PlayButtons onPlay={onPlayClick} onStop={onStopClick} />
+                                <br />
+                                <br />
+                                <br />
+                                <ControlButtons initialCpm={120} onSetCpm={setCPM} onS1Change={handleS1Change} onS5Change={handleS5Change} onVolumeChange={handleVolumeChange} />
+                                <br />
+                                <Graph />
+                            </div>
                         </nav>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-8" style={{ maxHeight: '50vh', overflowY: 'auto' }}>
-                        <div id="editor" />
-                        <div id="output" />
-                    </div>
-                    <div className="col-md-4">
-                        <ControlButtons initialCpm={120} onSetCpm={setCPM} onS1Change={handleS1Change} onVolumeChange={handleVolumeChange} />
-                    </div>
-                    <div className="col-md-4 ">
-                        <Graph />
                     </div>
                 </div>
             </div>

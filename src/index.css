@@ -11,3 +11,39 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.backgroundImage {
+  position: relative;
+}
+
+.backgroundImage::before {
+  content: "";
+  position: absolute;
+  background-image: url("./images/dj-wallpaper.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100vh;
+  width: 100%;
+  z-index: -1;
+  opacity: 0.8;
+  
+}
+
+.controls-container {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+/* Size of text  */
+.controls-container .label-text, 
+.controls-container .label_fast,
+.controls-container .checkbox-btn span.label-text  {
+  font-size: 2rem;
+  font-weight: 300;
+}
+
