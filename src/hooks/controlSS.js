@@ -1,26 +1,26 @@
 import { useState } from 'react';
 
 /**
- * useS5 - Custom hook to manage S5 checkbox state (mute/unmute control)
+ * useSS - Custom hook to manage s2 and s4 checkbox state (mute/unmute control)
  * 
  * @param {boolean} initial - Initial checked state (default: false = unmuted)
  * @param {function} onChange - Callback function to notify parent when checkbox changes
- * @returns {object} - Returns { s1Checked, setS1Checked, handleS1Change }
+ * @returns {object} - Returns { sSChecked, setSSChecked, handleSSChange }
  */
-export default function useS5(initial = false, onChange) {
-  const [s5Checked, setS5Checked] = useState(initial);
+export default function useSS(initial = false, onChange) {
+  const [sSChecked, setSSChecked] = useState(initial);
 
    /**
-   * handleS5Change - Event handler for checkbox changes
+   * handleSSChange - Event handler for checkbox changes
    * Updates the local state and notifies the parent component
    * 
    * @param {Event} e - The checkbox change event
    */
-  const handleS5Change = (e) => {
+  const handleSSChange = (e) => {
     const checked = e.target.checked;
-    setS5Checked(checked);
+    setSSChecked(checked);
     if (typeof onChange === 'function') onChange(checked);
   };
 
-  return { s5Checked, setS5Checked, handleS5Change };
+  return { sSChecked, setSSChecked, handleSSChange };
 }

@@ -30,7 +30,9 @@ export default function StrudelDemo() {
     const [getSongText, setSongText] = useState(() => felix_tune(120, false));
     const [muteS1, setMuteS1] = useState(false);
     const [muteS5, setMuteS5] = useState(false);
-    const [volume, setVolume] = useState(0.5);
+    const [muteSS, setMuteSS] = useState(false);
+    const [volume, setVolume] = useState(1);
+    const [lpf, setLpf] = useState(1000);
 
     const onPlayClick = () => {
             setIsPlaying(true);
@@ -56,20 +58,30 @@ export default function StrudelDemo() {
         setMuteS5(checked);
     };
 
+     // Handle SS mute/unmute changes
+    const handleSSChange = (checked) => {
+        setMuteSS(checked);
+    };
+
     // Handle volume changes 
     const handleVolumeChange = (vol) => {
         setVolume(vol);
     };
 
+    // Handle lpf changes 
+    const handleLpfChange = (lpf) => {
+        setLpf(lpf);
+    };
+
     useEffect(() => {
         const normalizedVolume = volume / 5;
-        const newText = felix_tune(cpm, muteS1, muteS5, normalizedVolume);
+        const newText = felix_tune(cpm, muteS1, muteS5,muteSS, normalizedVolume, lpf);
         setSongText(newText);
         if (globalEditor) {
             globalEditor.setCode(newText);
             if (isPlaying) globalEditor.evaluate();
         }
-    }, [cpm, muteS1, muteS5, volume, isPlaying]);
+    }, [cpm, muteS1, muteS5,muteSS, volume, lpf,  isPlaying]);
        
 
 useEffect(() => {
@@ -137,7 +149,7 @@ return (
                                 <br />
                                 <br />
                                 <br />
-                                <ControlButtons initialCpm={120} onSetCpm={setCPM} onS1Change={handleS1Change} onS5Change={handleS5Change} onVolumeChange={handleVolumeChange} />
+                                <ControlButtons initialCpm={120} onSetCpm={setCPM} onS1Change={handleS1Change} onS5Change={handleS5Change} onSSChange={handleSSChange} onVolumeChange={handleVolumeChange} onLpfChange={handleLpfChange} />
                                 <br />
                                 <Graph />
                             </div>

@@ -17,7 +17,16 @@ export default function useCpm(initial = 120, onSetCpm) {
    * @param {Event} e - The input change event
    */
   const handleChange = (e) => {
-    const v = Number(e.target.value);
+    const raw = e.target.value;
+    //If empty, clamp to min immediately
+    if (raw === '') {
+      setCpm(''); // keep input blank, don't call onSetCpm yet
+      return;
+    }
+    let v = Number(raw);
+    if (Number.isNaN(v)) return;
+    if (v < 20) v = 20;
+    if (v > 400) v = 400;
     setCpm(v);
     if (typeof onSetCpm === 'function') onSetCpm(v);
   };
