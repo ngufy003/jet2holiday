@@ -3,12 +3,12 @@ import { useState } from 'react';
 /**
  * useLpf - Custom hook to manage overall lpf state
  * 
- * @param {number} initial - Initial lpf value (default: 1000, range 400-1000)
+ * @param {number} initial - Initial lpf value (default: 1000, range 100-1000)
  * @param {function} onChange - Callback function to notify parent when lpf changes
  * @returns {object} - Returns { lpf, setLpf, handleLpfChange }
  */
 export default function useLpf(initial = 1000, onChange) {
-  // State to store the current lpf value (400-1000 scale)
+  // State to store the current lpf value (100-1000 scale)
   const [lpf, setLpf] = useState(initial);
 
   const handleSliderMove2 = (e) => {

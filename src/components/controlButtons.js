@@ -29,7 +29,7 @@ function ControlButtons({ initialCpm = 120, onSetCpm, onS1Change, onS5Change, on
             </div>
             <div>
                 <label htmlFor="speed_range" className="label_fast">LPF: {lpf} </label>
-                <input type="range" className="form-range" min="400" max="1000" step="100" 
+                <input type="range" className="form-range" min="100" max="1000" step="100" 
                     id="lpf_range" value={lpf} 
                     onMouseUp={handleLpfChange} 
                     onChange={handleSliderMove2} /> 
@@ -50,7 +50,7 @@ function ControlButtons({ initialCpm = 120, onSetCpm, onS1Change, onS5Change, on
             <label className="checkbox-btn">
                 <input id="sS" type="checkbox" checked={sSChecked} onChange={handleSSChange} />
                 <span className="checkmark" aria-hidden="true" />
-                <span className="label-text">Mute S2 & S4</span>
+                <span className="label-text">Mute S4</span>
             </label>
 
             <div>

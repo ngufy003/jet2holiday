@@ -72,10 +72,12 @@ export default function StrudelDemo() {
     const handleLpfChange = (lpf) => {
         setLpf(lpf);
     };
-
+    
+    // Handles updating the controls instantly while isPlaying is true.
     useEffect(() => {
         const normalizedVolume = volume / 5;
         const newText = felix_tune(cpm, muteS1, muteS5,muteSS, normalizedVolume, lpf);
+        // Update the song displayed in PreprocessTextArea
         setSongText(newText);
         if (globalEditor) {
             globalEditor.setCode(newText);
