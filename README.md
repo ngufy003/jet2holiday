@@ -28,8 +28,8 @@
 
 *   What AI tools you used, and your inputs and outputs (See AI usage guidelines)
 
+
 | Input: generate comments to function, including parameter, and what it returns |
-| --- |
 | Output: graph.js, playButtons.js, preprocessTextArea.js, procButtons.js, controlCPM.js, controlLpf.js, controlS1.js, controlS5.js, controlSS.js, controlVolume.js and app.js |
 | --- |
 | Input: currently hook function code is located inside the components dedicated file. Refactor the code so that the hook function to be in another file, so that there is a separate file that handles hooks and components. |
@@ -45,5 +45,8 @@
 | Output: The issue is the z-index: -1 applied to .backgroundImage. This pushes the background behind everything; however, since the background is on the same element as your buttons (the col-md-4 div), it also pushes the buttons behind, making them unclickable. |
 | --- |
 | Input: Fix my useEffect() that handles auto updating. Right now not all the inputs are getting changed when the song is playing. |
-| Output: implementconst ```newText = felix_tune(cpm, muteS1, muteS5,muteSS, normalizedVolume, lpf);        // Update the song displayed in PreprocessTextArea        setSongText(newText);        if (globalEditor) {            globalEditor.setCode(newText); ``` 
-if (isPlaying) globalEditor.evaluate();So now the user inputs adjust every time an input is changed with onChange() event. |
+| Output: implementconst ```newText = felix_tune(cpm, muteS1, muteS5,muteSS, normalizedVolume, lpf);
+    // Update the song displayed in PreprocessTextArea setSongText(newText); 
+    if (globalEditor) {globalEditor.setCode(newText);  if (isPlaying) globalEditor.evaluate(); ```
+    So now the user inputs adjust every time an input is changed with onChange() event. |
+
