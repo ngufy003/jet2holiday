@@ -19,43 +19,31 @@
 *   Any song code you’ve used from the Strudel.cc bakery (or any other source).
     *   S1 and S5 are Strudel.cc
 
-s1 : n("0 \[2 4\] <3 5> \[~ <4 1>\]".add("<0 \[0,2,4\]>"))
-
-.scale("C5:minor").release(.5)
-
-.sound("gm\_xylophone").room(.5).log();
-
-s5: note("<\[c2 c3\]\*4 \[bb1 bb2\]\*4 \[f2 f3\]\*4 \[eb2 eb3\]\*4>")
-
-.sound("sawtooth").lpf(${lpf}).slow(2)
+        s1 : n("0 \[2 4\] <3 5> \[~ <4 1>\]".add("<0 \[0,2,4\]>")).scale("C5:minor").release(.5).sound("gm\_xylophone").room(.5).log();
+        s5: note("<\[c2 c3\]\*4 \[bb1 bb2\]\*4 \[f2 f3\]\*4 \[eb2 eb3\]\*4>").sound("sawtooth").lpf(${lpf}).slow(2)
 
 *   *   S4 is a beat from artist Switch Angel. They do techno sound tracks
 
-s4: s("sbd:2!4").note("e2").duck("2:3")
-
-  .duckdepth(0.8).duckattack(0.2)
-
-  .almostNever(ply("3"))
-
-  .dec(5).gain(0.3).cut(4).lpf(100)
+        s4: s("sbd:2!4").note("e2").duck("2:3").duckdepth(0.8).duckattack(0.2).almostNever(ply("3")).dec(5).gain(0.3).cut(4).lpf(100)
 
 *   What AI tools you used, and your inputs and outputs (See AI usage guidelines)
 
 | Input: generate comments to function, including parameter, and what it returns |
 | --- |
 | Output: graph.js, playButtons.js, preprocessTextArea.js, procButtons.js, controlCPM.js, controlLpf.js, controlS1.js, controlS5.js, controlSS.js, controlVolume.js and app.js |
+| --- |
 | Input: currently hook function code is located inside the components dedicated file. Refactor the code so that the hook function to be in another file, so that there is a separate file that handles hooks and components. |
-| --- |
 | Output: AI refactored the files so that the functions handling controlCPM, controlS1, and controlVolume are now located in a folder called hooks.This became the baseline for how I organized and structured my hooks. |
+| --- |
 | Input: Add debugging code to graph.js. Because right now, no data is displaying on the d3 graph. |
-| --- |
 | Output: AI added debugging console.log() statements to each part of the graph.js file.From this, I noticed that LogToNum() is not outputting any console.log() messages.The resulting error was due to it looking for the wrong keyword, which had no value change. |
+| --- |
 | Input: what aspect of graph.js code will adjust the resolution of the graph? |
-| --- |
 | Output: AI suggests targeting const y = d3.scaleLinear().domain([0, maxValue]).range([h, 0]); . This constant controls the y-axis, and lowering the maxValue will increase the graph’s resolution. |
+| --- |
 | Input: when I add my background image with “.backgroundImage” the buttons and slides stop working? |
-| --- |
 | Output: The issue is the z-index: -1 applied to .backgroundImage. This pushes the background behind everything; however, since the background is on the same element as your buttons (the col-md-4 div), it also pushes the buttons behind, making them unclickable. |
-| Input: Fix my useEffect() that handles auto updating. Right now not all the inputs are getting changed when the song is playing. |
 | --- |
-| Output: implementconst newText = felix_tune(cpm, muteS1, muteS5,muteSS, normalizedVolume, lpf);        // Update the song displayed in PreprocessTextArea        setSongText(newText);        if (globalEditor) {            globalEditor.setCode(newText);            if (isPlaying) globalEditor.evaluate();So now the user inputs adjust every time an input is changed with onChange() event. |
+| Input: Fix my useEffect() that handles auto updating. Right now not all the inputs are getting changed when the song is playing. |
+| Output: implementconst ```newText = felix_tune(cpm, muteS1, muteS5,muteSS, normalizedVolume, lpf);        // Update the song displayed in PreprocessTextArea        setSongText(newText);        if (globalEditor) {            globalEditor.setCode(newText); ``` 
+if (isPlaying) globalEditor.evaluate();So now the user inputs adjust every time an input is changed with onChange() event. |
